@@ -13,14 +13,32 @@ def connect():
 
 def deleteMatches():
     """Remove all the match records from the database."""
+    conn = connect()
+    c = conn.cursor()
+    c.execute("DELETE FROM matches")
+    c.commit()
+    c.close()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
+    conn = connect()
+    c = conn.cursor()
+    c.execute("DELETE FROM players")
+    c.commit()
+    c.close()
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
+    conn = connect()
+    c = conn.cursor()
+    c.execute("SELECT * FROM view_player_count")
+    playerCount = c.fetchone()
+    c.close()
+
+    '''TODO: test this return data'''
+    return playerCount.count
 
 
 def registerPlayer(name):
@@ -32,6 +50,11 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
+    conn = connect()
+    c = conn.cursor()
+    c.execute("INSERT INTO players (name) VALUES ('%s')" % name)
+    c.commit()
+    c.close()
 
 
 def playerStandings():
@@ -47,17 +70,30 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+    '''TODO: make a table view?'''
+    '''TODO: need to pass in tournament arg to return respective stats'''
+    conn = connect()
+    c = conn.cursor()
+    c.execute("SELECT * FROM players, matches ")
+    c.commit()
+    c.close()
 
 
-def reportMatch(winner, loser):
+def reportMatch(winner, loser, match_id):
     """Records the outcome of a single match between two players.
 
     Args:
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
+      match_id: the id number of the match
     """
- 
- 
+    conn = connect()
+    c = conn.cursor()
+    ''' TODO: finish insert & consider byes, etc '''
+    ''' TODO: add arg for match ID'''
+    c.execute("INSERT INTO matches (tournament_id, player_id, created, result) VALUES ...")
+
+
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
   
@@ -74,4 +110,4 @@ def swissPairings():
         name2: the second player's name
     """
 
-
+countPlayers()
