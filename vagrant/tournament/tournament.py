@@ -16,7 +16,7 @@ def deleteMatches():
     conn = connect()
     c = conn.cursor()
     c.execute("DELETE FROM matches")
-    c.commit()
+    conn.commit()
     c.close()
 
 
@@ -25,7 +25,7 @@ def deletePlayers():
     conn = connect()
     c = conn.cursor()
     c.execute("DELETE FROM players")
-    c.commit()
+    conn.commit()
     c.close()
 
 
@@ -38,7 +38,7 @@ def countPlayers():
     c.close()
 
     '''TODO: test this return data'''
-    return playerCount.count
+    return playerCount[0]
 
 
 def registerPlayer(name):
@@ -52,8 +52,8 @@ def registerPlayer(name):
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("INSERT INTO players (name) VALUES ('%s')" % name)
-    c.commit()
+    c.execute("INSERT INTO players (firstname) VALUES (%s)", (name,))
+    conn.commit()
     c.close()
 
 
@@ -75,7 +75,6 @@ def playerStandings():
     conn = connect()
     c = conn.cursor()
     c.execute("SELECT * FROM players, matches ")
-    c.commit()
     c.close()
 
 
@@ -92,6 +91,7 @@ def reportMatch(winner, loser, match_id):
     ''' TODO: finish insert & consider byes, etc '''
     ''' TODO: add arg for match ID'''
     c.execute("INSERT INTO matches (tournament_id, player_id, created, result) VALUES ...")
+    conn.commit()
 
 
 def swissPairings():
@@ -109,5 +109,3 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-
-countPlayers()

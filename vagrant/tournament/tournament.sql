@@ -8,7 +8,7 @@
 
 -- Players table
 CREATE TABLE players (
-  id        SERIAL,
+  id        SERIAL PRIMARY KEY,
   username  TEXT,
   email     TEXT,
   firstname TEXT,
@@ -18,7 +18,7 @@ CREATE TABLE players (
 
 -- Tournaments table, which will support multiple tournaments
 CREATE TABLE tournaments (
-  id      SERIAL,
+  id      SERIAL PRIMARY KEY,
   title   TEXT,
   t_date  DATE,
   t_time  TIME,
@@ -30,9 +30,9 @@ CREATE TYPE match_result AS ENUM ('win', 'loss', 'draw', 'bye');
 
 -- Matches table
 CREATE TABLE matches (
-  id            SERIAL,
-  tournament_id SERIAL,
-  player_id     SERIAL,
+  id            SERIAL PRIMARY KEY,
+  tournament_id SERIAL REFERENCES tournaments (id),
+  player_id     SERIAL REFERENCES players (id),
   created       TIMESTAMP,
   result        match_result
 );
