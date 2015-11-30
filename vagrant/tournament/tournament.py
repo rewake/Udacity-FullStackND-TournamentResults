@@ -41,7 +41,7 @@ def countPlayers():
     return playerCount[0]
 
 
-def registerPlayer(name):
+def registerPlayer(name, email=None, username=None):
     """Adds a player to the tournament database.
   
     The database assigns a unique serial id number for the player.  (This
@@ -49,10 +49,12 @@ def registerPlayer(name):
   
     Args:
       name: the player's full name (need not be unique).
+      email: the player's email address
+      username: a username for the player
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("INSERT INTO players (firstname) VALUES (%s)", (name,))
+    c.execute("INSERT INTO players (name, email, username, created) VALUES (%s, NOW)", (name, email, username))
     conn.commit()
     c.close()
 

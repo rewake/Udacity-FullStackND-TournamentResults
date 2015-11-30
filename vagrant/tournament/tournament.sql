@@ -9,10 +9,9 @@
 -- Players table
 CREATE TABLE players (
   id        SERIAL PRIMARY KEY,
-  username  TEXT,
+  name      TEXT,
   email     TEXT,
-  firstname TEXT,
-  lastname  TEXT,
+  username  TEXT,
   created   TIMESTAMP
 );
 
@@ -25,16 +24,18 @@ CREATE TABLE tournaments (
   created TIMESTAMP
 );
 
+-- This was a "first thought" - simple data aggregation ultimately made more sense...
 -- ENUM for match results
-CREATE TYPE match_result AS ENUM ('win', 'loss', 'draw', 'bye');
+--CREATE TYPE match_result AS ENUM ('win', 'loss', 'draw', 'bye');
 
 -- Matches table
 CREATE TABLE matches (
   id            SERIAL PRIMARY KEY,
   tournament_id SERIAL REFERENCES tournaments (id),
   player_id     SERIAL REFERENCES players (id),
-  created       TIMESTAMP,
-  result        match_result
+  --result        match_result,
+  result        SMALLINT,
+  created       TIMESTAMP
 );
 
 -- View to get Player count
