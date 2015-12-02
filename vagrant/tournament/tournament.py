@@ -54,7 +54,7 @@ def registerPlayer(name, email=None, username=None):
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("INSERT INTO players (name, email, username, created) VALUES (%s, NOW)", (name, email, username))
+    c.execute("INSERT INTO players (name, email, username, created) VALUES (%s, %s, %s, NOW())", (name, email, username))
     conn.commit()
     c.close()
 
@@ -76,7 +76,7 @@ def playerStandings():
     '''TODO: need to pass in tournament arg to return respective stats'''
     conn = connect()
     c = conn.cursor()
-    c.execute("SELECT * FROM players, matches ")
+    c.execute("SELECT * FROM players, matches WHERE players.id=matches.player_id")
     c.close()
 
 
@@ -91,8 +91,10 @@ def reportMatch(winner, loser, match_id):
     conn = connect()
     c = conn.cursor()
     ''' TODO: finish insert & consider byes, etc '''
-    ''' TODO: add arg for match ID'''
-    c.execute("INSERT INTO matches (tournament_id, player_id, created, result) VALUES ...")
+    c.execute("INSERT INTO matches (match_id, player_id, result, created) VALUES (%s, %s, 1, NOW())",
+              (match_id, winner))
+    c.execute("INSERT INTO matches (match_id, player_id, result, created) VALUES (%s, %s, 0, NOW())",
+              (match_id, loser))
     conn.commit()
 
 
@@ -111,3 +113,7 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    conn = connect()
+    c = conn.cursor()
+    c.execute('select * from players left join matches on matches.player_id=players.id')
+    c.close()

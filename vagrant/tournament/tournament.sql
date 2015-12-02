@@ -10,10 +10,14 @@
 CREATE TABLE players (
   id        SERIAL PRIMARY KEY,
   name      TEXT,
-  email     TEXT,
-  username  TEXT,
+  email     TEXT UNIQUE,
+  username  TEXT UNIQUE,
   created   TIMESTAMP
 );
+
+-- Create unique indexes
+CREATE UNIQUE INDEX ON players (lower(email));
+CREATE UNIQUE INDEX ON players (lower(username));
 
 -- Tournaments table, which will support multiple tournaments
 CREATE TABLE tournaments (
@@ -24,16 +28,11 @@ CREATE TABLE tournaments (
   created TIMESTAMP
 );
 
--- This was a "first thought" - simple data aggregation ultimately made more sense...
--- ENUM for match results
---CREATE TYPE match_result AS ENUM ('win', 'loss', 'draw', 'bye');
-
 -- Matches table
 CREATE TABLE matches (
   id            SERIAL PRIMARY KEY,
-  tournament_id SERIAL REFERENCES tournaments (id),
-  player_id     SERIAL REFERENCES players (id),
-  --result        match_result,
+  tournament_id SERIAL REFERENCES tournaments (id) ON UPDATE CASCADE ON DELETE CASCADE,
+  player_id     SERIAL REFERENCES players (id) ON UPDATE CASCADE ON DELETE CASCADE,
   result        SMALLINT,
   created       TIMESTAMP
 );
