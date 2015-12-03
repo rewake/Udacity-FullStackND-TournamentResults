@@ -59,3 +59,17 @@ INSERT INTO
   (id, title, t_date, t_time, created)
 VALUES
   (0, 'Default Tournament', '2016-01-01', '12:00', NOW());
+
+
+-- Insert test data
+insert into players (id, name)values
+(27, 'Twlilight Sparkle'),
+(28, 'Fluttershy'),
+(29, 'Applejack'),
+(30, 'Pinkie Pie');
+
+insert into matches (tournament_id, player_id, result) values
+(0, 27, 1),
+(0, 28, 0),
+(0, 30, 1),
+(0, 29, 0);

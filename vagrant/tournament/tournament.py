@@ -120,5 +120,18 @@ def swissPairings():
     """
     conn = connect()
     c = conn.cursor()
-    c.execute('select * from players left join matches on matches.player_id=players.id')
+    c.execute('select players.id, name from players join matches on players.id = matches.player_id group '
+              'by players.id order by sum(result) desc')
+    pairings = []
+    i=0
+    for row in c.fetchall():
+        i += 1
+        pairings.append(row)
     c.close()
+    return pairings
+
+def createTournament():
+    return "WORK ON THIS!"
+
+def deleteTournament():
+    return "WORK ON THIS!"
