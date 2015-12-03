@@ -54,7 +54,8 @@ def registerPlayer(name, email=None, username=None):
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("INSERT INTO players (name, email, username, created) VALUES (%s, %s, %s, NOW())", (name, email, username))
+    c.execute("INSERT INTO players (name, email, username, created) VALUES (%s, %s, %s, NOW())",
+              (name, email, username))
     conn.commit()
     c.close()
 
@@ -72,15 +73,17 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    '''TODO: make a table view?'''
-    '''TODO: need to pass in tournament arg to return respective stats'''
     conn = connect()
     c = conn.cursor()
-    c.execute("SELECT * FROM players, matches WHERE players.id=matches.player_id")
+    c.execute("SELECT * FROM view_player_standings")
+    standings = []
+    for row in c.fetchall():
+        standings.append(row)
     c.close()
+    return standings
 
 
-def reportMatch(winner, loser, match_id):
+def reportMatch(winner, loser, tournament_id=0):
     """Records the outcome of a single match between two players.
 
     Args:
@@ -90,11 +93,13 @@ def reportMatch(winner, loser, match_id):
     """
     conn = connect()
     c = conn.cursor()
+
+
     ''' TODO: finish insert & consider byes, etc '''
-    c.execute("INSERT INTO matches (match_id, player_id, result, created) VALUES (%s, %s, 1, NOW())",
-              (match_id, winner))
-    c.execute("INSERT INTO matches (match_id, player_id, result, created) VALUES (%s, %s, 0, NOW())",
-              (match_id, loser))
+    c.execute("INSERT INTO matches (tournament_id, player_id, result, created) VALUES (%s, %s, 1, NOW())",
+              (tournament_id, winner))
+    c.execute("INSERT INTO matches (tournament_id, player_id, result, created) VALUES (%s, %s, 0, NOW())",
+              (tournament_id, loser))
     conn.commit()
 
 
