@@ -89,7 +89,7 @@ def reportMatch(winner, loser, tournament_id=0):
     Args:
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
-      match_id: the id number of the match
+      tournament_id: the id number of the match
     """
     conn = connect()
     c = conn.cursor()
@@ -126,9 +126,29 @@ def swissPairings():
     return pairings
 
 
-def createTournament():
-    return "WORK ON THIS!"
+def createTournament(title, date, time):
+    """Creates a new tournament.
 
+    Returns:
+        The id of the tournament that is created
+          id: the tournament's unique id
+    """
+    conn = connect()
+    c = conn.cursor()
+    c.execute("INSERT INTO tournaments (title, date, time, created) VALUES (%s, %s, %s, NOW()",
+              (title, date, time))
+    """ TODO: get id from insert """
+    conn.commit()
+    return
 
-def deleteTournament():
-    return "WORK ON THIS!"
+def deleteTournament(tournament_id):
+    """Deletes the specified tournament.
+    """
+    conn = connect()
+    c = conn.cursor()
+    c.execute("DELETE FROM tournaments WHERE id = %s",
+              (tournament_id,))
+    """ TODO: get id from insert """
+    conn.commit()
+
+def
