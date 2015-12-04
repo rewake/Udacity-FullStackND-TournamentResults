@@ -94,12 +94,10 @@ def reportMatch(winner, loser, tournament_id=0):
     conn = connect()
     c = conn.cursor()
 
-
     ''' TODO: finish insert & consider byes, etc '''
-    c.execute("INSERT INTO matches (tournament_id, player_id, result, created) VALUES (%s, %s, 1, NOW())",
-              (tournament_id, winner))
-    c.execute("INSERT INTO matches (tournament_id, player_id, result, created) VALUES (%s, %s, 0, NOW())",
-              (tournament_id, loser))
+    c.execute("INSERT INTO matches (tournament_id, player_id, result, created) VALUES "
+              "(%s, %s, 1, NOW()), (%s, %s, 0, NOW())",
+              (tournament_id, winner, tournament_id, loser))
     conn.commit()
 
 
@@ -120,18 +118,17 @@ def swissPairings():
     """
     conn = connect()
     c = conn.cursor()
-    c.execute('select players.id, name from players join matches on players.id = matches.player_id group '
-              'by players.id order by sum(result) desc')
+    c.execute('select * from view_swiss_pairings')
     pairings = []
-    i=0
     for row in c.fetchall():
-        i += 1
         pairings.append(row)
     c.close()
     return pairings
 
+
 def createTournament():
     return "WORK ON THIS!"
+
 
 def deleteTournament():
     return "WORK ON THIS!"

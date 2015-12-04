@@ -1,0 +1,124 @@
+SELECT
+	matched_players.id1,
+	matched_players.name1,
+	matched_players.id2,
+	matched_players.name2
+FROM
+	(
+		SELECT
+			player1.row_num,
+			player1.id1,
+			player1.name1,
+			player1.rownum,
+			player2.row_num2,
+			player2.id2,
+			player2.name2,
+			player2.rownum
+		FROM
+			(
+				(
+					SELECT
+						odd_rows.row_num,
+						odd_rows.id1,
+						odd_rows.name1,
+						ROW_NUMBER () OVER () AS rownum
+					FROM
+						(
+							SELECT
+								odd_rows_inner.row_num,
+								odd_rows_inner.id1,
+								odd_rows_inner.name1
+							FROM
+								(
+									SELECT
+										ROW_NUMBER () OVER (
+
+											ORDER BY
+												SUM (COALESCE(matches.result, 0)) DESC
+										) AS row_num,
+										players. ID AS id1,
+										players. NAME AS name1
+									FROM
+										(
+											players
+											left JOIN matches ON (
+												(
+													players. ID = matches.player_id
+												)
+											)
+										)
+									GROUP BY
+										players. ID
+									ORDER BY
+										SUM (COALESCE(matches.result, 0)) DESC
+								) odd_rows_inner
+							WHERE
+								(
+									MOD (
+										odd_rows_inner.row_num,
+										(2) :: BIGINT
+									) = 1
+								)
+						) odd_rows
+				) player1
+				left outer JOIN (
+					SELECT
+						even_rows.row_num2,
+						even_rows.id2,
+						even_rows.name2,
+						even_rows.rownum
+					FROM
+						(
+							SELECT
+								even_rows_inner.row_num2,
+								even_rows_inner.id2,
+								even_rows_inner.name2,
+								ROW_NUMBER () OVER () AS rownum
+							FROM
+								(
+									SELECT
+										ROW_NUMBER () OVER (
+
+											ORDER BY
+												SUM (COALESCE(matches.result, 0)) DESC
+										) AS row_num2,
+										players. ID AS id2,
+										players. NAME AS name2
+									FROM
+										(
+											players
+											left JOIN matches ON (
+												(
+													players. ID = matches.player_id
+												)
+											)
+										)
+									GROUP BY
+										players. ID
+									ORDER BY
+										SUM (COALESCE(matches.result, 0)) DESC
+								) even_rows_inner
+							WHERE
+								(
+									MOD (
+										even_rows_inner.row_num2,
+										(2) :: BIGINT
+									) = 0
+								)
+						) even_rows
+				) player2 ON (
+					(
+						player1.rownum = player2.rownum
+					)
+				)
+			)
+	) matched_players (
+		row_num,
+		id1,
+		name1,
+		rownum,
+		row_num2,
+		id2,
+		name2,
+		rownum_1
+	);

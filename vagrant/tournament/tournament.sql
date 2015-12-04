@@ -53,6 +53,37 @@ CREATE VIEW view_player_standings AS
     LEFT OUTER JOIN matches ON players.id = matches.player_id
   GROUP BY players.id;
 
+-- View to get swiss pairings
+CREATE VIEW view_swiss_pairings AS
+  SELECT id1, name1, id2, name2 FROM (
+    SELECT * FROM (
+      SELECT *, row_number() OVER () AS rownum FROM (
+        SELECT * FROM (
+          SELECT
+            row_number() OVER ( ORDER BY sum(result) DESC ) AS row_num,
+            players.id AS id1,
+            NAME AS name1
+          FROM players JOIN matches ON players.id = matches.player_id
+          GROUP BY players.id ORDER BY sum(result) DESC
+        ) even_rows_inner
+        WHERE mod(row_num, 2)=0
+      ) even_rows
+    ) player1
+    JOIN (
+      SELECT * FROM (
+        SELECT *, row_number() OVER () AS rownum FROM (
+          SELECT
+            row_number() OVER ( ORDER BY sum(result) DESC ) AS row_num2,
+            players.id AS id2,
+            NAME AS name2
+          FROM players JOIN matches ON players.id = matches.player_id
+          GROUP BY players.id ORDER BY sum(result) DESC
+        ) odd_rows_inner
+        WHERE mod(row_num2, 2)=1
+      ) odd_rows
+    ) player2 ON (player1.rownum=player2.rownum)
+  ) matched_players;
+
 -- Insert default tournament to satisfy tests
 INSERT INTO
   tournaments
@@ -62,14 +93,16 @@ VALUES
 
 
 -- Insert test data
-insert into players (id, name)values
-(27, 'Twlilight Sparkle'),
-(28, 'Fluttershy'),
-(29, 'Applejack'),
-(30, 'Pinkie Pie');
+/*
+INSERT INTO players (id, name) VALUES
+  (27, 'Twlilight Sparkle'),
+  (28, 'Fluttershy'),
+  (29, 'Applejack'),
+  (30, 'Pinkie Pie');
 
-insert into matches (tournament_id, player_id, result) values
-(0, 27, 1),
-(0, 28, 0),
-(0, 30, 1),
-(0, 29, 0);
+INSERT INTO matches (tournament_id, player_id, result) VALUES
+  (0, 27, 1),
+  (0, 28, 0),
+  (0, 30, 1),
+  (0, 29, 0);
+*/
