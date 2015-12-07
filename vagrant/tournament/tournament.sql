@@ -7,17 +7,19 @@
 -- these lines here.
 
 -- Players table
+-- NOTE: I stared off with fields for user details, but left them inactive
+-- as the instructions indicate to not have any unused columns.
 CREATE TABLE players (
   id       SERIAL PRIMARY KEY,
   name     TEXT,
-  email    TEXT UNIQUE,
-  username TEXT UNIQUE,
+  --email    TEXT UNIQUE,
+  --username TEXT UNIQUE,
   created  TIMESTAMP
 );
 
 -- Create unique indexes
-CREATE UNIQUE INDEX ON players (lower(email));
-CREATE UNIQUE INDEX ON players (lower(username));
+--CREATE UNIQUE INDEX ON players (lower(email));
+--CREATE UNIQUE INDEX ON players (lower(username));
 
 -- Tournaments table, which will support multiple tournaments
 CREATE TABLE tournaments (
@@ -54,6 +56,16 @@ CREATE VIEW view_player_standings AS
   GROUP BY players.id;
 
 -- View to get swiss pairings
+/*
+Note to instructor - since this course was about RDBMS queries I figured
+I'd push myself a bit to try and come up with a query that handles most of
+my logic instead of relying on python.
+
+This query calculates the number of winning matches for each player, and orders
+the results by number of wins. That result set is then split into odd and even
+rows and lastly pairs those rows together to create a match based on points.
+This query also handles odd numbers of players as listed in the extra credit section.
+ */
 CREATE VIEW view_swiss_pairings AS
   SELECT
     id1, name1, id2, name2
@@ -90,7 +102,7 @@ CREATE VIEW view_swiss_pairings AS
     ) player2 ON (player1.rownum=player2.rownum)
   ) paired_players;
 
--- Insert default tournament to satisfy tests
+-- Insert default tournament to satisfy tests and single tournaments
 INSERT INTO
   tournaments
   (id, title, t_date, t_time, created)

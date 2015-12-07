@@ -36,8 +36,6 @@ def countPlayers():
     c.execute("SELECT * FROM view_player_count")
     playerCount = c.fetchone()
     c.close()
-
-    '''TODO: test this return data'''
     return playerCount[0]
 
 
@@ -54,8 +52,8 @@ def registerPlayer(name, email=None, username=None):
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("INSERT INTO players (name, email, username, created) VALUES (%s, %s, %s, NOW())",
-              (name, email, username))
+    c.execute("INSERT INTO players (name, created) VALUES (%s, NOW())",
+              (name,))
     conn.commit()
     c.close()
 
@@ -93,8 +91,6 @@ def reportMatch(winner, loser, tournament_id=0):
     """
     conn = connect()
     c = conn.cursor()
-
-    ''' TODO: finish insert & consider byes, etc '''
     c.execute("INSERT INTO matches (tournament_id, player_id, result, created) VALUES "
               "(%s, %s, 1, NOW()), (%s, %s, 0, NOW())",
               (tournament_id, winner, tournament_id, loser))
@@ -116,12 +112,25 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    pairings = []
     conn = connect()
     c = conn.cursor()
-    c.execute('select * from view_swiss_pairings')
-    pairings = []
-    for row in c.fetchall():
-        pairings.append(row)
+    ''' See if we have match results yet. If not, it must be the first round, so we'll
+        return a random set of matches
+        NOTE: random() has performance implications for large tables, but should be fine
+        for these recordsets.
+        '''
+    c.execute('SELECT COUNT(*) FROM MATCHES')
+    matchCount = c.fetchone()
+    if (matchCount[0] > 0):
+        c.execute('SELECT * FROM view_swiss_pairings')
+        for row in c.fetchall():
+            pairings.append(row)
+    else:
+        c.execute("SELECT id, name FROM players ORDER BY random()")
+        p = c.fetchall()
+        for i in range(0, len(p) - 1, 2):
+            pairings.append(p[i]['id'], p[i]['name'], p[i+1]['id'], p[i+1]['name'])
     c.close()
     return pairings
 
@@ -137,9 +146,10 @@ def createTournament(title, date, time):
     c = conn.cursor()
     c.execute("INSERT INTO tournaments (title, date, time, created) VALUES (%s, %s, %s, NOW()",
               (title, date, time))
-    """ TODO: get id from insert """
+    tournament_id = c.lastrowid
     conn.commit()
-    return
+    return tournament_id
+
 
 def deleteTournament(tournament_id):
     """Deletes the specified tournament.
@@ -148,7 +158,4 @@ def deleteTournament(tournament_id):
     c = conn.cursor()
     c.execute("DELETE FROM tournaments WHERE id = %s",
               (tournament_id,))
-    """ TODO: get id from insert """
     conn.commit()
-
-def
