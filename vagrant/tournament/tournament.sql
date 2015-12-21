@@ -6,6 +6,12 @@
 -- You can write comments in this file by starting them with two dashes, like
 -- these lines here.
 
+
+-- Drop tournament DB if it exists
+DROP DATABASE IF EXISTS tournament;
+CREATE DATABASE tournament;
+\c tournament;
+
 -- Players table
 -- NOTE: I stared off with fields for user details, but left them inactive
 -- as the instructions indicate to not have any unused columns.
