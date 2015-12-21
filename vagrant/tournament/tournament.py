@@ -15,6 +15,7 @@ def deleteMatches():
     """Remove all the match records from the database."""
     conn = connect()
     c = conn.cursor()
+    """This query will delete everything from the matches table."""
     c.execute("DELETE FROM matches")
     conn.commit()
     c.close()
@@ -24,6 +25,7 @@ def deletePlayers():
     """Remove all the player records from the database."""
     conn = connect()
     c = conn.cursor()
+    """This query will delete everything from the players table."""
     c.execute("DELETE FROM players")
     conn.commit()
     c.close()
@@ -33,7 +35,9 @@ def countPlayers():
     """Returns the number of players currently registered."""
     conn = connect()
     c = conn.cursor()
+    """This query will delete everything from the view_player_count view."""
     c.execute("SELECT * FROM view_player_count")
+    """Fetch the first result, which is the player count"""
     player_count = c.fetchone()
     c.close()
     return player_count[0]
@@ -52,6 +56,7 @@ def registerPlayer(name, email=None, username=None):
     """
     conn = connect()
     c = conn.cursor()
+    """This query will insert a new player into the players table."""
     c.execute("INSERT INTO players (name, created) VALUES (%s, NOW())",
               (name,))
     conn.commit()
@@ -73,7 +78,10 @@ def playerStandings():
     """
     conn = connect()
     c = conn.cursor()
+    """This query will retreive the player standings from the player standings view."""
     c.execute("SELECT * FROM view_player_standings")
+
+    """Loop through the returned standings and put them in a list."""
     standings = []
     for row in c.fetchall():
         standings.append(row)
@@ -91,6 +99,7 @@ def reportMatch(winner, loser, tournament_id=0):
     """
     conn = connect()
     c = conn.cursor()
+    """Insert results in to matches table."""
     c.execute(
         "INSERT INTO matches (tournament_id, player_id, result, created) "
         "VALUES (%s, %s, 1, NOW()), (%s, %s, 0, NOW())",
@@ -146,6 +155,7 @@ def createTournament(title, date, time):
     """
     conn = connect()
     c = conn.cursor()
+    """Inseter new tournament into tournaments database"""
     c.execute(
         "INSERT INTO tournaments (title, date, time, created) "
         "VALUES (%s, %s, %s, NOW()",
@@ -160,6 +170,7 @@ def deleteTournament(tournament_id):
     """
     conn = connect()
     c = conn.cursor()
+    """Delete tournament from the tournaments database"""
     c.execute("DELETE FROM tournaments WHERE id = %s",
               (tournament_id,))
     conn.commit()
