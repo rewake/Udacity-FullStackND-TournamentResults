@@ -8,7 +8,7 @@ The purpose of this application is to keep track of tournaments, matches and pla
 First, run the tournament.sql file to setup the database and all tables.
 
 ```
-psql tournament < tournament.sql
+psql < tournament.sql
 ```
 
 Next, run the tournament_test.py file to execute all tests.
